@@ -1,0 +1,45 @@
+--- ../../../untainted/vasp.4.6/main.F	2013-10-02 13:44:36.000000000 -0500
++++ main.F	2015-02-24 15:01:19.000000000 -0600
+@@ -142,6 +142,7 @@
+ !-MM- Added to write AE charge densities
+       USE aedens
+ !-MM_ end of additions
++      USE projection_output  !Added by BDD for projection analysis
+       IMPLICIT COMPLEX(q) (C)
+       IMPLICIT REAL(q) (A-B,D-H,O-Z)
+ 
+@@ -304,6 +305,11 @@
+       CHARACTER (LEN=5)   IDENTIFY
+ !-----parameters for sphpro.f
+       INTEGER :: LDIMP,LMDIMP,LTRUNC=3
++
++!Added by BDD
++!-----Logical to be read in for performing output of pw's for projection
++      LOGICAL    LNBO
++
+ !=======================================================================
+ ! All COMMON blocks
+ !=======================================================================
+@@ -3774,6 +3780,22 @@
+       ENDIF
+ 
+    ENDIF wrtwave
++
++
++  !Added by BDD for customized output
++  wrtnbo: IF ( INFO%LSTOP ) THEN
++
++      !First, test if the flag has been given in the INCAR for output
++      LNBO = .FALSE.
++      CALL RDATAB(IO%LOPEN,'INCAR',IO%IU5,'LNBO','=','#',';','L', &
++     &            IDUM,RDUM,CDUM,LNBO,CHARAC,N,1,IERR)
++      !Then call the subroutine
++      IF ( LNBO )CALL output_NBO(WDES,W,LATT_INI,T_INFO,P,CQIJ)
++
++  ENDIF wrtnbo
++
++
++
+ !=======================================================================
+ ! next electronic energy minimisation
+       CALL VTIME(TVPUL,TCPUL)

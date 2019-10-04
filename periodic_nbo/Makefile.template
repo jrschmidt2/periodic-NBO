@@ -1,0 +1,10 @@
+#use: mkmf -t Makefile.template -p nbo.exe
+#to generate a proper makefile
+
+MKLROOT=/home/schmidt/intel/Compiler/11.1/069/mkl/lib/em64t
+
+
+LD=ifort
+FC=ifort
+FFLAGS= -I$(MKLROOT) -qopenmp 
+LDFLAGS=-L$(MKLROOT) -qopenmp -lmkl_blas95_lp64 -lmkl_lapack95_lp64 -lpthread -lm -I$(MKLROOT) -mkl=sequential

@@ -1,0 +1,58 @@
+--- vasp.5.4.1/src/main.F	2015-06-29 09:00:40.000000000 -0500
++++ test_vasp.5.4.1/src/main.F	2015-08-28 14:01:42.000000000 -0500
+@@ -172,6 +172,8 @@
+       USE solvation
+ ! solvation__
+ 
++      USE projection_output
++
+       IMPLICIT COMPLEX(q) (C)
+       IMPLICIT REAL(q) (A-B,D-H,O-Z)
+ 
+@@ -326,6 +328,11 @@
+       CHARACTER (LEN=5)   IDENTIFY
+ !-----parameters for sphpro.f
+       INTEGER :: LDIMP,LMDIMP,LTRUNC=3
++
++!Added by BDD
++!-----Logical to be read in for performing output of pw's for projection
++      LOGICAL    LNBO
++
+ !=======================================================================
+ ! All COMMON blocks
+ !=======================================================================
+@@ -4185,6 +4192,22 @@
+         CALL REDIS_PW_OVER_BANDS(WDES, W)
+       ENDIF
+    ENDIF wrtwave
++
++
++  !Added by BDD for customized output
++  wrtnbo: IF ( INFO%LSTOP ) THEN
++
++      !First, test if the flag has been given in the INCAR for output
++      LNBO = .FALSE.
++      CALL RDATAB(IO%LOPEN,'INCAR',IO%IU5,'LNBO','=','#',';','L', &
++     &            IDUM,RDUM,CDUM,LNBO,CHARAC,N,1,IERR)
++      !Then call the subroutine
++      IF ( LNBO )CALL output_NBO(WDES,W,LATT_INI,T_INFO,P,CQIJ)
++
++  ENDIF wrtnbo
++
++
++
+ !=======================================================================
+ ! next electronic energy minimisation
+       CALL STOP_TIMING("LOOP+",IO%IU6,XMLTAG='totalsc')
+--- vasp.5.4.1/src/.objects	2015-06-29 09:00:32.000000000 -0500
++++ test_vasp.5.4.1/src/.objects	2015-08-28 14:01:18.000000000 -0500
+@@ -164,7 +164,8 @@
+ 	wnpr.o \
+ 	dmft.o \
+ 	auger.o \
+-	dmatrix.o
++	dmatrix.o \
++	projection_output.o
+ 
+ SOURCE_O1 = \
+ 	wave_high.o \

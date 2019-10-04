@@ -1,0 +1,75 @@
+!  6-311G*  EMSL  Basis Set Exchange Library   11/14/12 4:03 PM
+! Elements                             References
+! --------                             ----------
+! H, Li - Ne: R. Krishnan, J.S. Binkley, R. Seeger and J.A. Pople,
+!             J. Chem. Phys. 72, 650 (1980)
+! Na - Ar:    A.D. McLean and G.S. Chandler J. Chem. Phys. 72, 5639, (1980).
+! K  - Ca:    J-P. Blaudeau, M. P. McGrath, L.A. Curtiss and L. Radom,
+!             J. Chem. Phys. 107, 5016 (1997).
+! Ga - Kr:    L. A. Curtiss, M. P. McGrath, J-P. Blandeau, N. E. Davis, 
+!             R. C. Binning, Jr. L. Radom, J. Chem. Phys. 103, 6104 (1995).
+! I      :    M.N. Glukhovstev, A. pross, M.P. McGrath, L. Radom, J. Chem. Phys.
+!             103, 1878 (1995)
+!   
+
+! Elements                             References
+! --------                             ----------
+! Li - Ar: R. Krishnan, J.S. Binkley, R. Seeger, J.A. Pople, J. Chem. Phys. 72,
+!          650 (1980).
+! K  - Ca: J-P. Blaudeau, M. P. McGrath, L.A. Curtiss
+!                                    and L. Radom, J. Chem. Phys. 107, 5016
+!                                    (1997).
+! Ga - Kr: L. A. Curtiss, M. P. McGrath, J-P. Blandeau, N. E. Davis, R. C. 
+!          Binning, Jr., L. Radom, J. Chem. Phys. 103, 6104 (1995)
+!   
+
+
+****
+Mg     0 
+S   6   1.00
+  43866.5000000              0.0009180        
+   6605.3700000              0.0070470        
+   1513.2600000              0.0359410        
+    432.3170000              0.1414610        
+    142.1490000              0.4267640        
+     51.3983000              0.4979750        
+S   3   1.00
+     51.3983000              0.2513550        
+     19.9196000              0.6186710        
+      8.0247400              0.1884170        
+S   1   1.00
+      2.5081700              1.0000000        
+S   1   1.00
+      0.8715310              1.0000000        
+P   4   1.00
+    193.8540000              0.0101880        
+     45.4420000              0.0753600        
+     14.1864000              0.3074190        
+      5.0575100              0.7175750        
+P   2   1.00
+      1.8886100              0.6673390        
+      0.7226520              0.3946490        
+P   1   1.00
+      0.2364170              1.0000000        
+D   1   1.00
+      0.1750000              1.0000000        
+****
+O     0
+S   6   1.00
+   8588.5000000              0.00189515
+   1297.2300000              0.0143859
+    299.2960000              0.0707320
+     87.3771000              0.2400010
+     25.6789000              0.5947970
+      3.7400400              0.2808020
+SP   3   1.00
+     42.1175000              0.1138890              0.0365114
+      9.6283700              0.9208110              0.2371530
+      2.8533200             -0.00327447             0.8197020
+SP   1   1.00
+      0.9056610              1.0000000              1.0000000
+SP   1   1.00
+      0.2556110              1.0000000              1.0000000
+D   1   1.00
+      1.2920000              1.0000000
+****

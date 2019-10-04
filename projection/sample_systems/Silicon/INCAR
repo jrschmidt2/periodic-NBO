@@ -1,0 +1,20 @@
+ general:
+   SYSTEM = Si_bulk
+   ISTART = 0
+   ICHARG = 2
+   ISMEAR = -5   #Determines partial occupancies of obritals, Since metal is being looked at methfessel-Paxton should be used (>0) 2-> 2nd order
+   ALGO= Fast   #Sets algorithm of electronic minimization, uses Davidson-Block for first iteration, then RMM-DIIS for all subsequent.  Resets at every ionic move.
+
+   ISYM = 0
+
+   EDIFF = 1E-6
+   NELMIN = 4
+
+   LNBO = True
+
+ dynamic:
+   NSW = 0       #max number of ionic moves
+   POTIM = 0.1   #scaling of forces for ionic moves
+   IBRION = 2    #Conjugate gradient method, I think it is close to equilibrated but maybe not
+   EDIFFG = -1E-2
+
