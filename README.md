@@ -10,7 +10,8 @@ Dunnington and Schmidt, JCTC; 8, 1902-1911 (2012)
 ***********************************************************
 
 This projection code is capable of representing any plane-wave bands output by VASP 
-into any user specified Gaussian type orbital basis set.
+into any user specified Gaussian type orbital basis set. Such an AO representation is
+required for the subsequent NBO analysis.
 The code is set up to then output all information necessary for periodic 
 NBO analysis using the code of JRS and BDD.
 
@@ -23,7 +24,7 @@ NBO analysis using the code of JRS and BDD.
 
 
 1. Insert projection_output.F into directory containing VASP source code and apply 
-proj_VASP.patch
+proj_VASP.patch (alternatively, there is also a patch available for CRYSTAL).
 
 2. Run VASP calculation with LNBO=.TRUE. in INCAR (creates wavefunction.dat)
 
