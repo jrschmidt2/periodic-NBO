@@ -18,8 +18,8 @@ CONTAINS
 ! Kudin and Scuseria, Chem. Phys. Lett.; 289, 611-616 (1998)
 
 SUBROUTINE bloch_space_overlap(AO_basis,index_l)
-  USE mkl95_lapack
-  USE mkl95_blas
+  USE lapack95
+  USE blas95
   IMPLICIT NONE
 
   TYPE(AO_function), DIMENSION(:) :: AO_basis
@@ -189,9 +189,9 @@ SUBROUTINE bloch_space_overlap(AO_basis,index_l)
       bloch_s_inv(:,:,ik) = bloch_s_mat(:,:,ik)
       IF( SVD )THEN
          !SVD inversion method, more robust but slow
-         CALL ZGESVD_MKL95(bloch_s_inv(:,:,ik),sing_value,u_matrix,v_matrix,work_array,'A')
+         CALL ZGESVD_F95(bloch_s_inv(:,:,ik),sing_value,u_matrix,v_matrix,work_array,'A')
          !Previously used SVD routine, has numerical instability wrt really small values
-         !CALL ZGESDD_MKL95(bloch_s_inv(:,:,ik),sing_value,u_matrix,v_matrix,'A')
+         !CALL ZGESDD_F95(bloch_s_inv(:,:,ik),sing_value,u_matrix,v_matrix,'A')
   
          !This loop is the equivalent of multiplying the inverse of the singular values matrix by adjoint of the u matrix
          DO j=1,s_dim
@@ -202,16 +202,16 @@ SUBROUTINE bloch_space_overlap(AO_basis,index_l)
                inv_dummy(j,:) = 0.d0
             ENDIF
          ENDDO
-         CALL ZGEMM_MKL95(v_matrix,inv_dummy,bloch_s_inv(:,:,ik),'C','N',(1.d0,0.d0),(0.d0,0.d0))
+         CALL ZGEMM_F95(v_matrix,inv_dummy,bloch_s_inv(:,:,ik),'C','N',(1.d0,0.d0),(0.d0,0.d0))
       ELSE
          !LU decompostion inversion method, fast but easily suffers from instability due to linear dependency
-         CALL ZGETRF_MKL95(bloch_s_inv(:,:,ik),IPIV,INFO)
+         CALL ZGETRF_F95(bloch_s_inv(:,:,ik),IPIV,INFO)
          IF( INFO /= 0 )THEN
             WRITE(6,*)'The inverese of the overlap matrix for kpt',ik,'could not be computed'
             WRITE(6,*)'INFO value output from ZGETRF',INFO
             STOP
          ENDIF
-         CALL ZGETRI_MKL95(bloch_s_inv(:,:,ik),IPIV)
+         CALL ZGETRI_F95(bloch_s_inv(:,:,ik),IPIV)
       ENDIF
 
       !WRITE(6,*)'inverse for kpoint',ik
@@ -248,7 +248,7 @@ END SUBROUTINE bloch_space_overlap
 !IF there are linear dependencies the best bet is to just 'trim' the basis set of its most diffuse functions.
 !In periodic systems there is no 'edge' and these diffuse functions are largely uneccessary.
 SUBROUTINE check_linear_depend(input_mat,eig_min)
-  USE mkl95_lapack
+  USE lapack95
   IMPLICIT NONE
 
   COMPLEX*16,DIMENSION(:,:),INTENT(IN)  ::  input_mat
@@ -262,7 +262,7 @@ SUBROUTINE check_linear_depend(input_mat,eig_min)
 
   test_mat = input_mat
 
-  CALL ZHEEV_MKL95(test_mat,eigval,'V','U',INFO)
+  CALL ZHEEV_F95(test_mat,eigval,'V','U',INFO)
 
   IF( INFO .NE. 0 )THEN
      WRITE(6,*)'Calculating eigenvalues in check_linear_depend failed'

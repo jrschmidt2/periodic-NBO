@@ -101,7 +101,7 @@ CONTAINS
 !$OMP END CRITICAL
           IF (idg.GT.0.AND.normab.GT.thresh) THEN
 !             c(:,:,ig)=c(:,:,ig)+MATMUL(a(:,:,igp),b(:,:,idg))
-             CALL DGEMM_MKL95(a(:,:,igp),b(:,:,idg),c(:,:,ig),'N','N',1.d0,1.d0)
+             CALL DGEMM_F95(a(:,:,igp),b(:,:,idg),c(:,:,ig),'N','N',1.d0,1.d0)
 !$OMP CRITICAL
              imul=imul+1
 !$OMP END CRITICAL
@@ -165,7 +165,7 @@ CONTAINS
           IF (idg.GT.0) THEN
              !WRITE(6,*)'non zero matrix',idg,indexg(:,idg)
              c(:,ig)=c(:,ig)+MATMUL(a(:,:,idg),b(:,igp))
-             !CALL DGEMM_MKL95(a(:,:,igp),b(:,:,idg),c(:,:,ig),'N','N',1.d0,1.d0)
+             !CALL DGEMM_F95(a(:,:,igp),b(:,:,idg),c(:,:,ig),'N','N',1.d0,1.d0)
              imul=imul+1
           ENDIF
 

@@ -1,7 +1,7 @@
 #use: mkmf -t Makefile.template -p nbo.exe
 #to generate a proper makefile
 
-MKLROOT=/home/schmidt/intel/Compiler/11.1/069/mkl/lib/em64t
+MKLROOT=/opt/intel/compilers_and_libraries_2017.1.132/linux/mkl/lib/intel64/
 
 
 LD=ifort

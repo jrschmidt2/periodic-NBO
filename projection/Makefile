@@ -1,11 +1,10 @@
 # Makefile created by mkmf $Id: mkmf,v 13.0 2006/04/10 21:20:01 fms Exp $ 
 
-MKLROOT=/home/schmidt/intel/Compiler/11.1/069/mkl/lib/em64t
-
+MKLROOT=/opt/intel/compilers_and_libraries_2017.1.132/linux/mkl/lib/intel64/
 
 LD=ifort
 FC=ifort
-FFLAGS= -I$(MKLROOT) -qopenmp
+FFLAGS= -I$(MKLROOT) -qopenmp 
 LDFLAGS=-L$(MKLROOT) -qopenmp -lmkl_blas95_lp64 -lmkl_lapack95_lp64 -lpthread -lm -I$(MKLROOT) -mkl=sequential
 
 

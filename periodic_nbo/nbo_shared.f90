@@ -167,9 +167,9 @@ MODULE nbo_shared
 
     DO ispin=1,inp%nspins
        DO ik=1,nk
-          CALL ZGEMM_MKL95(inp%rhok(:,:,ik,ispin),inp%sk(:,:,ik),nelec_dummy,'N','C',(1.d0,0.d0),(0.d0,0.d0))
+          CALL ZGEMM_F95(inp%rhok(:,:,ik,ispin),inp%sk(:,:,ik),nelec_dummy,'N','C',(1.d0,0.d0),(0.d0,0.d0))
           nelec=nelec+inp%kpt_wt(ik)*mattrace(nelec_dummy) 
-          CALL ZGEMM_MKL95(inp%rhok(:,:,ik,ispin),inp%fockk(:,:,ik,ispin),nelec_dummy,'N','C',(1.d0,0.d0),(0.d0,0.d0))
+          CALL ZGEMM_F95(inp%rhok(:,:,ik,ispin),inp%fockk(:,:,ik,ispin),nelec_dummy,'N','C',(1.d0,0.d0),(0.d0,0.d0))
           nenergy=nenergy+inp%kpt_wt(ik)*mattrace(nelec_dummy)
        ENDDO
     ENDDO

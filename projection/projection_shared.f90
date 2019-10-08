@@ -94,8 +94,8 @@ ENDSUBROUTINE nu_g_overlap
 !The bands are in the same original AO basis
 !The orhtogonalizing matrix is constructed as W(WSW)^-1/2, where S is the 'overlap_mat' and W is a diagonal matrix containing the occupancy of each band
 SUBROUTINE do_OWSO(overlap_mat,band_occ,band_coeff)
-  USE mkl95_BLAS
-  USE mkl95_LAPACK
+  USE BLAS95
+  USE LAPACK95
   IMPLICIT NONE
 
   COMPLEX*16,DIMENSION(:,:),INTENT(IN)    ::  overlap_mat  !Input overlap matrix, used to construct orthogonalizing matrix
@@ -145,7 +145,7 @@ SUBROUTINE do_OWSO(overlap_mat,band_occ,band_coeff)
 
   !Now obtain the eigenvectors to obtain the square root matrix
   eigvec = sym_weight
-  CALL ZHEEV_MKL95(eigvec,eigval,'V','U',INFO)
+  CALL ZHEEV_F95(eigvec,eigval,'V','U',INFO)
   IF( INFO /= 0 )THEN
      WRITE(6,*)'The eigenvalues of the overlap matrix could not be computed'
      WRITE(6,*)'INFO on exit of ZHEEV',INFO
@@ -156,7 +156,7 @@ SUBROUTINE do_OWSO(overlap_mat,band_occ,band_coeff)
   DO iband=1,nbands
      sym_weight(iband,:) = CONJG(eigvec(:,iband)) / SQRT(eigval(iband))  !Sym_weight is now just a dummy matrix for use in the BLAS routine
   ENDDO
-  CALL ZGEMM_MKL95(eigvec,sym_weight,sqrt_inv,'N','N',(1.d0,0.d0),(0.d0,0.d0))
+  CALL ZGEMM_F95(eigvec,sym_weight,sqrt_inv,'N','N',(1.d0,0.d0),(0.d0,0.d0))
 
 
   !To obtain the orthogonlaizing matrix an additional multiplication by the weight matrix must be applied from the left
@@ -168,7 +168,7 @@ SUBROUTINE do_OWSO(overlap_mat,band_occ,band_coeff)
   !Now the bands can finally be orhtogonalized
   !Note that the original coefficients are lost. They are currently unused but this will have to be rewritten if they become necessary.
   coeff_dummy = band_coeff
-  CALL ZGEMM_MKL95(coeff_dummy,sqrt_inv,band_coeff,'N','N',(1.d0,0.d0),(0.d0,0.d0))
+  CALL ZGEMM_F95(coeff_dummy,sqrt_inv,band_coeff,'N','N',(1.d0,0.d0),(0.d0,0.d0))
 
 
 

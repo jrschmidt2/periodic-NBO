@@ -336,7 +336,7 @@ MODULE nbo
                   !IF( jg /= ig )Pi = Pi - outer_product(bond_coeff(:,2*ibondorlp+1-inbo,jg),bond_coeff(:,2*ibondorlp+1-inbo,jg))
                   !proj_dummy = P
                   !P = MATMUL(Pi,P)
-                  !CALL DGEMM_MKL95(Pi,proj_dummy,P,'N','N',1.d0,0.d0)
+                  !CALL DGEMM_F95(Pi,proj_dummy,P,'N','N',1.d0,0.d0)
 
                   rhoat=0.d0
                   rhoat(iifirst:iilast,iifirst:iilast)=inp%rho0(ifirst:ilast,ifirst:ilast,ig,ispin)
@@ -379,8 +379,8 @@ MODULE nbo
 
       !Now project out all of the bonding and antibonding density, to leave solely the dentisy associated with Rydberg states
       !inp%rho0(:,:,1) = MATMUL(P,(MATMUL(inp%rho0(:,:,1),P)))
-      !CALL DGEMM_MKL95(inp%rho0(:,:,1),P,proj_dummy,'N','N',1.d0,0.d0)
-      !CALL DGEMM_MKL95(P,proj_dummy,inp%rho0(:,:,1),'N','N',1.d0,0.d0)
+      !CALL DGEMM_F95(inp%rho0(:,:,1),P,proj_dummy,'N','N',1.d0,0.d0)
+      !CALL DGEMM_F95(P,proj_dummy,inp%rho0(:,:,1),'N','N',1.d0,0.d0)
 
 
       !PRINT *, 'made it to doing rydberg search'
@@ -552,7 +552,7 @@ MODULE nbo
          Pi=Pi-outer_product(lpcontrib,lpcontrib)
          Pdummy=P
          !P=MATMUL(Pi,P)
-         CALL DGEMM_MKL95(Pi,Pdummy,P,'N','N',1.d0,0.d0)
+         CALL DGEMM_F95(Pi,Pdummy,P,'N','N',1.d0,0.d0)
 
          !IF( occ > core_thresh*DBLE(3-inp%nspins) )THEN
          !   PRINT *, 'Removing CR from atom',iatom
@@ -563,8 +563,8 @@ MODULE nbo
       !PRINT *
 
       !inp%rho0(:,:,1) = MATMUL(P,(MATMUL(inp%rho0(:,:,1),P)))
-      CALL DGEMM_MKL95(inp%rho0(:,:,1,ispin),P,Pdummy,'N','N',1.d0,0.d0)
-      CALL DGEMM_MKL95(P,Pdummy,inp%rho0(:,:,1,ispin),'N','N',1.d0,0.d0)
+      CALL DGEMM_F95(inp%rho0(:,:,1,ispin),P,Pdummy,'N','N',1.d0,0.d0)
+      CALL DGEMM_F95(P,Pdummy,inp%rho0(:,:,1,ispin),'N','N',1.d0,0.d0)
 
 
     END SUBROUTINE do_1c_search
@@ -981,7 +981,7 @@ MODULE nbo
       !onto the remaining basis function n+1:nbasis
       Sinv=matinv(S(1:n,1:n))
       !proj=MATMUL(Sinv,S(1:n,n+1:nbasis))
-      CALL DGEMM_MKL95(Sinv,S(1:n,n+1:nbasis),proj,'N','N',1.d0,0.d0)
+      CALL DGEMM_F95(Sinv,S(1:n,n+1:nbasis),proj,'N','N',1.d0,0.d0)
 
       !Now do gs orthogonalization using those projections
       Os=0.d0

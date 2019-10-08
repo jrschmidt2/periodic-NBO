@@ -4,7 +4,7 @@ PROGRAM projection_main
   USE rd_basis
   USE bloch_overlap
   USE PAW
-  USE mkl95_blas
+  USE blas95
   IMPLICIT NONE
 
   CHARACTER(128)  ::  basis_fn, VASP_fn, NBO_fn
@@ -145,28 +145,28 @@ PROGRAM projection_main
         !Then for each basis function, nu, the contribution of the planewaves is calculated for all bands at one using vector-matrix multiplication
         DO ispin=1,nspins
            !each computation is SUM(nu) S-1{mu,nu} * (SUM(g) <nu|g>*c(a,g))
-           CALL ZGEMV_MKL95(pw_coeff(:,:,ik,ispin),AO_PW_overlap(:,ik),proj_matrix(nu,:,ik,ispin),(1.d0,0.d0),(0.d0,0.d0),'T')
+           CALL ZGEMV_F95(pw_coeff(:,:,ik,ispin),AO_PW_overlap(:,ik),proj_matrix(nu,:,ik,ispin),(1.d0,0.d0),(0.d0,0.d0),'T')
         ENDDO
      ENDDO
 
      DO ispin=1,nspins
 !        !Calculation of planewave contributions to band coeff's are done at once using matrix multiplication
 !        !each computation is SUM(nu) S-1{mu,nu} * (SUM(g) <nu|g>*c(a,g))
-!        CALL ZGEMM_MKL95(AO_PW_overlap(:,:,ik),pw_coeff(:,:,ik,ispin),proj_matrix(:,:,ik),'N','N',(1.d0,0.d0),(0.d0,0.d0))
+!        CALL ZGEMM_F95(AO_PW_overlap(:,:,ik),pw_coeff(:,:,ik,ispin),proj_matrix(:,:,ik),'N','N',(1.d0,0.d0),(0.d0,0.d0))
 !
 !        !Since band is simply summation of PW AND PAW, PAW contirbution is simply added to PW's
-!        IF( PAW_pseudo )  CALL ZGEMM_MKL95(PAW_overlap(:,:,ik),PAW_coeff(:,:,ik,ispin),proj_matrix(:,:,ik),'N','N',(1.d0,0.d0),(1.d0,0.d0))
+!        IF( PAW_pseudo )  CALL ZGEMM_F95(PAW_overlap(:,:,ik),PAW_coeff(:,:,ik,ispin),proj_matrix(:,:,ik),'N','N',(1.d0,0.d0),(1.d0,0.d0))
 !
 !        !Band overlaps are finally multiplied by inverse of overlap matrix to complete projection
 !        !The use of the inverse of the overlap matrix is necessary due to the non-orthogonality of the AO-basis
-!        CALL ZGEMM_MKL95(bloch_s_inv(:,:,ik),proj_matrix(:,:,ik),bloch_band_coeff(:,:,ik,ispin),'N','N',(1.d0,0.d0),(0.d0,0.d0))
+!        CALL ZGEMM_F95(bloch_s_inv(:,:,ik),proj_matrix(:,:,ik),bloch_band_coeff(:,:,ik,ispin),'N','N',(1.d0,0.d0),(0.d0,0.d0))
 
         !Since band is simply summation of PW AND PAW, PAW contirbution is simply added to PW's
-        IF( PAW_pseudo )  CALL ZGEMM_MKL95(PAW_overlap(:,:,ik),PAW_coeff(:,:,ik,ispin),proj_matrix(:,:,ik,ispin),'N','N',(1.d0,0.d0),(1.d0,0.d0))
+        IF( PAW_pseudo )  CALL ZGEMM_F95(PAW_overlap(:,:,ik),PAW_coeff(:,:,ik,ispin),proj_matrix(:,:,ik,ispin),'N','N',(1.d0,0.d0),(1.d0,0.d0))
 
         !Band overlaps are finally multiplied by inverse of overlap matrix to complete projection
         !The use of the inverse of the overlap matrix is necessary due to the non-orthogonality of the AO-basis
-        CALL ZGEMM_MKL95(bloch_s_inv(:,:,ik),proj_matrix(:,:,ik,ispin),bloch_band_coeff(:,:,ik,ispin),'N','N',(1.d0,0.d0),(0.d0,0.d0))
+        CALL ZGEMM_F95(bloch_s_inv(:,:,ik),proj_matrix(:,:,ik,ispin),bloch_band_coeff(:,:,ik,ispin),'N','N',(1.d0,0.d0),(0.d0,0.d0))
 
      ENDDO
 
@@ -208,19 +208,19 @@ PROGRAM projection_main
            coeff_dummy(:,iband) = bloch_band_coeff(:,iband,ik,ispin) * weight(iband,ik,ispin)
         ENDDO
         !Matrix muliplication is used to calculate the density matrix
-        CALL ZGEMM_MKL95(coeff_dummy,bloch_band_coeff(:,:,ik,ispin),bloch_density(:,:,ik,ispin),'N','C',(1.d0,0.d0),(0.d0,0.d0))
+        CALL ZGEMM_F95(coeff_dummy,bloch_band_coeff(:,:,ik,ispin),bloch_density(:,:,ik,ispin),'N','C',(1.d0,0.d0),(0.d0,0.d0))
 
         !FOCK MATRIX
         !Matrix multiplication is used to convert the Fock matrix into the projected basis
         ! F{mu,nu} = SUM(fock_coeff{nu,iband}*F{iband,iband}*CONJG(fock_coeff{nu,iband}))
         !First the nonorthogonality of the bloch orbtials must be addressed since the MO->AO transform is not unitary 
         !coeff's must be multiplied by Overlap matrix
-        CALL ZGEMM_MKL95(bloch_s_mat(:,:,ik),bloch_band_coeff(:,:,ik,ispin),coeff_dummy,'N','N',(1.d0,0.d0),(0.d0,0.d0))
+        CALL ZGEMM_F95(bloch_s_mat(:,:,ik),bloch_band_coeff(:,:,ik,ispin),coeff_dummy,'N','N',(1.d0,0.d0),(0.d0,0.d0))
         !Then the trnsformation is simply a unitary transform using the new coefficients
         DO iband=1,nbands
            fock_dummy(iband,:) = eig(iband,ik,ispin)*CONJG(coeff_dummy(:,iband))
         ENDDO
-        CALL ZGEMM_MKL95(coeff_dummy,fock_dummy,bloch_fock(:,:,ik,ispin),'N','N',(1.d0,0.d0),(0.d0,0.d0))
+        CALL ZGEMM_F95(coeff_dummy,fock_dummy,bloch_fock(:,:,ik,ispin),'N','N',(1.d0,0.d0),(0.d0,0.d0))
      ENDDO
   ENDDO
 
@@ -235,12 +235,12 @@ PROGRAM projection_main
   energy_sum = 0.d0
   DO ispin=1,nspins
      DO ik=1,nkpts
-        CALL ZGEMM_MKL95(bloch_density(:,:,ik,ispin),bloch_s_mat(:,:,ik),n_elec_dummy,'N','N',(1.d0,0.d0),(0.d0,0.d0))
+        CALL ZGEMM_F95(bloch_density(:,:,ik,ispin),bloch_s_mat(:,:,ik),n_elec_dummy,'N','N',(1.d0,0.d0),(0.d0,0.d0))
         n_elec_dummy = n_elec_dummy*kpt_wt(ik)
         DO nu=1,s_dim
            num_elec = num_elec + n_elec_dummy(nu,nu)
         ENDDO
-        CALL ZGEMM_MKL95(bloch_density(:,:,ik,ispin),bloch_fock(:,:,ik,ispin),n_elec_dummy,'N','N',(1.d0,0.d0),(0.d0,0.d0))
+        CALL ZGEMM_F95(bloch_density(:,:,ik,ispin),bloch_fock(:,:,ik,ispin),n_elec_dummy,'N','N',(1.d0,0.d0),(0.d0,0.d0))
         n_elec_dummy = n_elec_dummy*kpt_wt(ik)
         DO nu=1,s_dim
            energy_sum = energy_sum + n_elec_dummy(nu,nu)
@@ -271,7 +271,7 @@ CONTAINS
 !This subrotuine computes the overlap matrices of the projected bands in the AO basis.
 !This information is also used to calculate the spillover (quantify how much of band density is lost in projection
 SUBROUTINE calc_spillover(r_mat,band_coeff)
-  USE mkl95_blas
+  USE blas95
   USE rd_wavefunction
   USE projection_shared
   IMPLICIT NONE
@@ -345,8 +345,8 @@ SUBROUTINE calc_spillover(r_mat,band_coeff)
 
      !Overlap of projected bands is computed using matrix mulitplication
      !Each overlap is equal to SUM(mu) SUM(nu) c*S{mu,nu}c
-     CALL ZGEMM_MKL95(bloch_s_mat(:,:,ik),band_coeff(:,:,ik,ispin),r_mat_dummy,'N','N',(1.d0,0.d0),(0.d0,0.d0))
-     CALL ZGEMM_MKL95(band_coeff(:,:,ik,ispin),r_mat_dummy,r_mat(:,:,ik,ispin),'C','N',(1.d0,0.d0),(0.d0,0.d0))
+     CALL ZGEMM_F95(bloch_s_mat(:,:,ik),band_coeff(:,:,ik,ispin),r_mat_dummy,'N','N',(1.d0,0.d0),(0.d0,0.d0))
+     CALL ZGEMM_F95(band_coeff(:,:,ik,ispin),r_mat_dummy,r_mat(:,:,ik,ispin),'C','N',(1.d0,0.d0),(0.d0,0.d0))
 
 
      !Then the norm of each band at each k-point is analyzed to make sure the norm is appropriate

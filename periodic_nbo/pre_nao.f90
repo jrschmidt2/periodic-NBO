@@ -135,9 +135,9 @@ MODULE pre_nao
     num_elec = 0.d0
     DO ispin=1,nspins
        DO ik=1,nk
-          CALL ZGEMM_MKL95(inp%rhok(:,:,ik,ispin),inp%fockk(:,:,ik,ispin),energy_test,'N','C',(1.d0,0.d0),(0.d0,0.d0))
+          CALL ZGEMM_F95(inp%rhok(:,:,ik,ispin),inp%fockk(:,:,ik,ispin),energy_test,'N','C',(1.d0,0.d0),(0.d0,0.d0))
           energy_sum = energy_sum + inp%kpt_wt(ik)*mattrace(energy_test)
-          !CALL ZGEMM_MKL95(inp%rhok(:,:,ik,ispin),sk(:,:,ik),elec_test,'N','C',(1.d0,0.d0),(0.d0,0.d0))
+          !CALL ZGEMM_F95(inp%rhok(:,:,ik,ispin),sk(:,:,ik),elec_test,'N','C',(1.d0,0.d0),(0.d0,0.d0))
           num_elec = num_elec + inp%kpt_wt(ik)*mattrace(inp%rhok(:,:,ik,ispin))  !sk should be the identity matrix now
        ENDDO
     ENDDO
@@ -193,8 +193,8 @@ MODULE pre_nao
 !$OMP PARALLEL DEFAULT(PRIVATE) SHARED(nk,rhok,sk)
 !$OMP DO SCHEDULE(STATIC)
       DO ik=1,nk
-         CALL ZGEMM_MKL95(rhok(:,:,ik),sk(:,:,ik),dummy,'N','N',(1.d0,0.d0),(0.d0,0.d0))
-         CALL zGEMM_MKL95(sk(:,:,ik),dummy,rhok(:,:,ik),'N','N',(1.d0,0.d0),(0.d0,0.d0))
+         CALL ZGEMM_F95(rhok(:,:,ik),sk(:,:,ik),dummy,'N','N',(1.d0,0.d0),(0.d0,0.d0))
+         CALL zGEMM_F95(sk(:,:,ik),dummy,rhok(:,:,ik),'N','N',(1.d0,0.d0),(0.d0,0.d0))
       ENDDO
 !$OMP END DO NOWAIT
 !$OMP END PARALLEL
@@ -298,7 +298,7 @@ MODULE pre_nao
          sk(:,:,ik)=matunitary_trans(sk(:,:,ik),TRANSPOSE(N))
          rhok(:,:,ik)=matunitary_trans(rhok(:,:,ik),TRANSPOSE(N))
          dummy = idenk(:,:,ik)
-         CALL ZGEMM_MKL95(N,dummy,idenk(:,:,ik),'C','N',(1.d0,0.d0),(0.d0,0.d0))
+         CALL ZGEMM_F95(N,dummy,idenk(:,:,ik),'C','N',(1.d0,0.d0),(0.d0,0.d0))
       ENDDO
 !$OMP END DO NOWAIT
 !$OMP END PARALLEL
@@ -365,7 +365,7 @@ MODULE pre_nao
          sk(:,:,ik)=matunitary_trans(sk(:,:,ik),Os)
          rhok(:,:,ik)=matunitary_trans(rhok(:,:,ik),Os)
          dummy = idenk(:,:,ik)
-         CALL ZGEMM_MKL95(Os,dummy,idenk(:,:,ik),'N','N',(1.d0,0.d0),(0.d0,0.d0))
+         CALL ZGEMM_F95(Os,dummy,idenk(:,:,ik),'N','N',(1.d0,0.d0),(0.d0,0.d0))
 
       !Step 3c:  Restoration of natural character of NRB
       !(Omitted; doesn't seem important at all)
@@ -451,7 +451,7 @@ MODULE pre_nao
          sk(:,:,ik)=matunitary_trans(sk(:,:,ik),Ow)
          rhok(:,:,ik)=matunitary_trans(rhok(:,:,ik),Ow)
          dummy = idenk(:,:,ik)
-         CALL ZGEMM_MKL95(Ow,dummy,idenk(:,:,ik),'N','N',(1.d0,0.d0),(0.d0,0.d0))
+         CALL ZGEMM_F95(Ow,dummy,idenk(:,:,ik),'N','N',(1.d0,0.d0),(0.d0,0.d0))
 
          !WRITE(6,*)'hi occ ryd orthog'
 
@@ -461,7 +461,7 @@ MODULE pre_nao
          sk(:,:,ik)=matunitary_trans(sk(:,:,ik),Ow)
          rhok(:,:,ik)=matunitary_trans(rhok(:,:,ik),Ow)
          dummy = idenk(:,:,ik)
-         CALL ZGEMM_MKL95(Ow,dummy,idenk(:,:,ik),'N','N',(1.d0,0.d0),(0.d0,0.d0))
+         CALL ZGEMM_F95(Ow,dummy,idenk(:,:,ik),'N','N',(1.d0,0.d0),(0.d0,0.d0))
 
          !Finally with the low occupancy NRB
          !Here we first do a Gram-Schmidt orthogonalization of the low occupancy states to the remainder
@@ -469,7 +469,7 @@ MODULE pre_nao
          sk(:,:,ik)=matunitary_trans(sk(:,:,ik),Os)
          rhok(:,:,ik)=matunitary_trans(rhok(:,:,ik),Os)
          dummy = idenk(:,:,ik)
-         CALL ZGEMM_MKL95(Os,dummy,idenk(:,:,ik),'N','N',(1.d0,0.d0),(0.d0,0.d0))
+         CALL ZGEMM_F95(Os,dummy,idenk(:,:,ik),'N','N',(1.d0,0.d0),(0.d0,0.d0))
 
          !WRITE(6,*)'lo occ ryd orthog'
 
@@ -480,7 +480,7 @@ MODULE pre_nao
          sk(:,:,ik)=matunitary_trans(sk(:,:,ik),Ow)
          rhok(:,:,ik)=matunitary_trans(rhok(:,:,ik),Ow)
          dummy = idenk(:,:,ik)
-         CALL ZGEMM_MKL95(Ow,dummy,idenk(:,:,ik),'N','N',(1.d0,0.d0),(0.d0,0.d0))
+         CALL ZGEMM_F95(Ow,dummy,idenk(:,:,ik),'N','N',(1.d0,0.d0),(0.d0,0.d0))
 
          !Now restore the expected order of the basis functions
          sk(:,:,ik)=remap_matrix(sk(:,:,ik),irydbasisremap,.TRUE.)
@@ -656,7 +656,7 @@ MODULE pre_nao
       !onto the remaining basis function n+1:nbasis
       Sinv=matinv(S(1:n,1:n))
       !proj=MATMUL(Sinv,S(1:n,n+1:nbasis))
-      CALL ZGEMM_MKL95(Sinv,S(1:n,n+1:nbasis),proj,'N','N',(1.d0,0.d0),(0.d0,0.d0))
+      CALL ZGEMM_F95(Sinv,S(1:n,n+1:nbasis),proj,'N','N',(1.d0,0.d0),(0.d0,0.d0))
 
       !Now do gs orthogonalization using those projections
       Os=0.d0
@@ -707,7 +707,7 @@ MODULE pre_nao
       nbasis=SIZE(N,1)
       IF (PRESENT(S)) THEN
          !overlap=MATMUL(matsqrt(S),N)
-         CALL DGEMM_MKL95(matsqrt(S),N,overlap,'N','N',1.d0,0.d0)
+         CALL DGEMM_F95(matsqrt(S),N,overlap,'N','N',1.d0,0.d0)
       ELSE
          overlap=N
       ENDIF
